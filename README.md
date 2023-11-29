@@ -104,7 +104,7 @@ This project is licensed under the MIT License.
 
 ---
 ## Application Link
-[Deployed Application](https://shivam-todo-app.netlify.app/)
+[Deployed Application](https://elitefit-todo.vercel.app/)
 
 
 ## Support:
