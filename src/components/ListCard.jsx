@@ -1,20 +1,23 @@
+import moment from "moment";
 import React from "react";
 
-const ListCard = ({ task,onStatusChange,onDelete,onEdit}) => {
+const ListCard = ({ task, onStatusChange, onDelete, onEdit }) => {
   const handleStatusChange = () => {
     const newStatus = task.status === "Completed" ? "Upcoming" : "Completed";
     onStatusChange(task.id, newStatus);
   };
-  const handleDeleteChange=()=>{
-    onDelete(task.id)
-  }
-  const handleEditChange=()=>{
-    onEdit(task.id)
-  }
+  const handleDeleteChange = () => {
+    onDelete(task.id);
+  };
+  const handleEditChange = () => {
+    onEdit(task.id);
+  };
   return (
     <>
       <li
-        className={`flex justify-between items-center ${task.status==="Completed"?"bg-green-400": "bg-white"} px-4 py-3 rounded-xl`}
+        className={`flex justify-between items-center ${
+          task.status === "Completed" ? "bg-green-400" : "bg-white"
+        } px-4 py-3 rounded-xl`}
       >
         <input
           id="default-checkbox"
@@ -28,14 +31,19 @@ const ListCard = ({ task,onStatusChange,onDelete,onEdit}) => {
             <h3 className="text-md font-bold tracking-tight text-gray-900 ">
               {task.title}
             </h3>
-            <p className="text-xs items-center text-gray-400 ">{task.date}</p>
+            <p className="text-xs items-center text-gray-400 ">
+              {moment(task.date).format("DD MMM hh:mm")}
+            </p>
             <p className="font-semibol text-xs text-gray-600 ">
               {task.description}
             </p>
           </div>
         </div>
         <div className="flex justify-center items-center gap-2">
-          <button onClick={handleEditChange} className="text-white bg-yellow-500 border-0 py-2 px-3 focus:outline-none hover:bg-yellow-600 rounded text-md">
+          <button
+            onClick={handleEditChange}
+            className="text-white bg-yellow-500 border-0 py-2 px-3 focus:outline-none hover:bg-yellow-600 rounded text-md"
+          >
             <svg
               className="w-6 h-6"
               viewBox="0 0 24 24"
@@ -58,7 +66,10 @@ const ListCard = ({ task,onStatusChange,onDelete,onEdit}) => {
               />
             </svg>
           </button>
-          <button onClick={handleDeleteChange}  className="text-white bg-red-500 border-0 py-2 px-3 focus:outline-none hover:bg-red-600 rounded text-md">
+          <button
+            onClick={handleDeleteChange}
+            className="text-white bg-red-500 border-0 py-2 px-3 focus:outline-none hover:bg-red-600 rounded text-md"
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"

@@ -1,7 +1,11 @@
-import React, { useState } from "react";
-import { Datepicker } from "flowbite-react";
+import React, { useEffect, useState } from "react";
+import Datetime from "react-datetime";
+import "react-datetime/css/react-datetime.css";
+import moment from "moment";
+import { Input } from "@chakra-ui/react";
+import { v4 as uuidv4 } from 'uuid';
 
-const TaskForm = ({ onClose }) => {
+const TaskForm = ({ onClose, editId }) => {
   const currentDate = new Date().toISOString().slice(0, 10);
 
   const [task, setTask] = useState({
@@ -12,21 +16,55 @@ const TaskForm = ({ onClose }) => {
     date: currentDate,
   });
 
+  useEffect(() => {
+    if (editId) {
+      const tasksFromStorage = JSON.parse(localStorage.getItem("list")) || [];
+      setTask(() => {
+        const task = tasksFromStorage.find((t) => t.id === editId);
+        console.log(task);
+        return task;
+      });
+    } else {
+      setTask({
+        title: "",
+        description: "",
+        priority: "high",
+        status: "",
+        date: currentDate,
+      });
+    }
+  }, [editId]);
+
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log(task);
     const tasksFromStorage = JSON.parse(localStorage.getItem("list")) || [];
-    const newTask = {
-      ...task,
-      id: tasksFromStorage.length + 1,
-    };
-    localStorage.setItem("list", JSON.stringify([...tasksFromStorage, newTask]));
+    let newTask;
+    if (editId) {
+      const i = tasksFromStorage.findIndex((t) => t.id == editId);
+      newTask = tasksFromStorage;
+      newTask[i].title = task.title;
+      newTask[i].description = task.description;
+      newTask[i].date = task.date;
+      newTask[i].priority = task.priority;
+      newTask[i].status = task.status;
+      localStorage.setItem("list", JSON.stringify([...newTask]));
+    } else {
+      newTask = {
+        ...task,
+        id: uuidv4(),
+      };
+      localStorage.setItem(
+        "list",
+        JSON.stringify([...tasksFromStorage, newTask])
+      );
+    }
     setTask({
       title: "",
       description: "",
       priority: "high",
       status: "",
-      date: currentDate, 
+      date: currentDate,
     });
     onClose();
   };
@@ -47,6 +85,7 @@ const TaskForm = ({ onClose }) => {
   };
 
   const handleDateChange = (date) => {
+    console.log(date);
     const selectedDate = new Date(date);
     const today = new Date();
 
@@ -70,16 +109,26 @@ const TaskForm = ({ onClose }) => {
         <div className="flex gap-2">
           <input
             type="text"
+            required="true"
             className="block w-full p-2.5  text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 "
             placeholder="Title..."
             name="title"
             value={task.title}
             onChange={handleInputChange}
           />
-          <Datepicker
-            placeholder="Select date"
-            value={task.date} 
-            onChange={handleDateChange} 
+          <Datetime
+            closeOnSelect={true}
+            onChange={(e) => {
+              handleDateChange(e);
+            }}
+            value={task.date}
+            isValidDate={(current, selected) => {
+              var yesterday = moment().subtract(1, "day");
+              return current.isAfter(yesterday);
+            }}
+            renderInput={(props, openCalendar, closeCalendar) => {
+              return <Input {...props} placeholder="Due Date" />;
+            }}
           />
         </div>
         <textarea
@@ -118,7 +167,7 @@ const TaskForm = ({ onClose }) => {
           type="submit"
           className="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
         >
-          Add Task
+          {editId ? "Save" : "Add"} Task
         </button>
       </form>
     </div>

@@ -22,6 +22,7 @@ import {
 } from "@chakra-ui/react";
 import { ChevronDownIcon } from "@chakra-ui/icons";
 import TaskModal from "../components/TaskModal";
+import moment from "moment";
 
 const HomePage = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -29,7 +30,7 @@ const HomePage = () => {
   const [search, setSearch] = useState("");
   const [priority, setPriority] = useState("");
   const [tab, setTab] = useState("All");
-
+  const [editID, setEditId] = useState(null);
   const handlePriorityChange = (e) => {
     setPriority(e.target.value);
   };
@@ -54,9 +55,19 @@ const HomePage = () => {
   };
   const handleEditChange = (id) => {
     onOpen();
+    setEditId(id);
   };
+
+  const tasksFromStorage = JSON.parse(localStorage.getItem("list")) || [];
+
   useEffect(() => {
-    const tasksFromStorage = JSON.parse(localStorage.getItem("list")) || [];
+    localStorage.setItem("list", JSON.stringify(tasksFromStorage));
+  }, [tasksFromStorage]);
+
+  useEffect(() => {
+    if (!isOpen) {
+      setEditId(null);
+    }
     const filteredList = tasksFromStorage.filter((task) => {
       const isInSearch =
         task.title.toLowerCase().includes(search.toLowerCase()) ||
@@ -69,9 +80,9 @@ const HomePage = () => {
         case "All":
           return isInSearch && isPriorityMatch;
         case "Upcoming":
-          return task.status === "Upcoming" && isInSearch && isPriorityMatch;
+          return moment(task.date).isAfter(new Date())&& isInSearch && isPriorityMatch;
         case "Overdue":
-          return task.status === "Overdue" && isInSearch && isPriorityMatch;
+          return moment(task.date).isBefore(new Date()) && isInSearch && isPriorityMatch;
         case "Completed":
           return task.status === "Completed" && isInSearch && isPriorityMatch;
         default:
@@ -210,7 +221,12 @@ const HomePage = () => {
           </ModalBody>
         </ModalContent>
       </Modal> */}
-      <TaskModal isOpen={isOpen} onOpen={onOpen} onClose={onClose}></TaskModal>
+      <TaskModal
+        isOpen={isOpen}
+        onOpen={onOpen}
+        onClose={onClose}
+        editId={editID}
+      ></TaskModal>
     </div>
   );
 };
