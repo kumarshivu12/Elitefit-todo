@@ -7,6 +7,53 @@
 3. Functionality:3hrs
 ****
 
+**Q2 -   What was the most useful feature that was added to the latest version of your chosen language? Please include a snippet of code that shows how you've used it.** 
+
+In various projects, I've incorporated several advanced features like useCallback, useMemo, useLayoutEffect, and useDeferredValue. However, one key hook that's been fundamental across these projects is useEffect. It's  used for managing side effects in functional components, enabling actions to be performed after the initial rendering and after subsequent updates. 
+Let me illustrate with an example of how useEffect plays a crucial role:
+```
+useEffect(() => {
+    if (!isOpen) {
+      setEditId(null);
+    }
+    const filteredList = tasksFromStorage.filter((task) => {
+      const isInSearch =
+        task.title.toLowerCase().includes(search.toLowerCase()) ||
+        task.description.toLowerCase().includes(search.toLowerCase()) ||
+        task.date.toLowerCase().includes(search.toLowerCase());
+
+      const isPriorityMatch = priority ? task.priority === priority : true;
+
+      switch (tab) {
+        case "All":
+          return isInSearch && isPriorityMatch;
+        case "Upcoming":
+          return moment(task.date).isAfter(new Date())&& isInSearch && isPriorityMatch;
+        case "Overdue":
+          return moment(task.date).isBefore(new Date()) && isInSearch && isPriorityMatch;
+        case "Completed":
+          return task.status === "Completed" && isInSearch && isPriorityMatch;
+        default:
+          return isInSearch && isPriorityMatch;
+      }
+    });
+    setList(filteredList);
+  }, [isOpen, search, priority, tab]);
+  ```
+
+**Q3 -   How would you track down a performance issue in production? Have you ever had to do this?** 
+
+To identify a production performance issue, I would take the following actions:
+Determine the Issue: Make use of monitoring tools to pinpoint the precise region or part that is generating the performance problem.
+
+Code Review: Look over the pertinent code to find resource-intensive operations or inefficient algorithms.
+
+Optimization: Perform any required optimizations, such as reducing the number of re-renders, using memoization, or streamlining database queries.
+
+Testing: Prior to implementing the changes in production, test them in a safe setting.
+
+
+
 **Q4 -If you had more time, what additional features or improvements would you consider adding to the task management application?** 
 
 Certainly! If I had more time to enhance a task management application, here are some features and improvements I'd consider:
