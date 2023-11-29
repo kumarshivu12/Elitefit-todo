@@ -28,9 +28,15 @@ const ListCard = ({ task, onStatusChange, onDelete, onEdit }) => {
         />
         <div className="flex w-[75%] justify-between items-center">
           <div className="">
+            <div className="flex gap-2 items-center">
             <h3 className="text-md font-bold tracking-tight text-gray-900 ">
               {task.title}
             </h3>
+            <span className={`${task.priority==="high"?"bg-red-200":task.priority==="medium"?"bg-yellow-200":"bg-green-200"}  text-black text-xs font-medium me-2 px-2.5 py-0.5 rounded `}>
+  {task.priority}
+</span>
+
+            </div>
             <p className="text-xs items-center text-gray-400 ">
               {moment(task.date).format("DD MMM hh:mm")}
             </p>
